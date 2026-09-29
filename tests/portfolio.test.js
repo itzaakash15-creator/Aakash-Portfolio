@@ -16,7 +16,7 @@ test("portfolio content has unique projects and complete case studies", () => {
     assert.ok(project.scope.length >= 3);
     assert.ok(project.image.startsWith("/images/"));
   }
-  assert.equal(disciplines.length, 4);
+  assert.equal(disciplines.length, 5);
   assert.equal(timeline[0].year, "2020");
 });
 

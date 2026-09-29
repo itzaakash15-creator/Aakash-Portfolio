@@ -14,14 +14,24 @@ import {
   InstagramLogo,
   GithubLogo,
   LinkedinLogo,
-  Asterisk,
+  Sparkle,
+  ShieldCheck,
+  EnvelopeSimple,
+  Phone,
+  Browsers,
+  Compass,
+  VideoCamera,
+  DeviceMobileCamera,
 } from "@phosphor-icons/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { projects, disciplines, timeline } from "./data.js";
+import { projects, proofs, disciplines, timeline } from "./data.js";
 
 gsap.registerPlugin(ScrollTrigger);
+
 const email = "itzaakash15@gmail.com";
+const phone = "+91 85906 37715";
+const phoneTel = "+918590637715";
 const filters = [
   "All work",
   "Brand strategy",
@@ -30,16 +40,17 @@ const filters = [
 ];
 const external = { target: "_blank", rel: "noopener noreferrer" };
 
-function ArrowLink({ href, children, className = "", newTab = false }) {
+function ArrowLink({ href, children, className = "", newTab = false, ariaLabel }) {
   return (
     <a
       href={href}
       className={`arrow-link ${className}`}
       {...(newTab ? external : {})}
+      aria-label={ariaLabel}
     >
-      {children}
-      <span>
-        <ArrowUpRight size={20} weight="regular" />
+      <span>{children}</span>
+      <span className="arrow-box" aria-hidden="true">
+        <ArrowUpRight size={18} weight="bold" />
       </span>
     </a>
   );
@@ -47,17 +58,23 @@ function ArrowLink({ href, children, className = "", newTab = false }) {
 
 function ProjectDialog({ project, onClose }) {
   const ref = useRef(null);
+
   useEffect(() => {
     if (!project) return;
     const dialog = ref.current;
+    if (!dialog) return;
     const previousOverflow = document.body.style.overflow;
     dialog.showModal();
     document.body.style.overflow = "hidden";
+
     return () => {
       document.body.style.overflow = previousOverflow;
-      dialog.close();
+      if (dialog.open) {
+        dialog.close();
+      }
     };
   }, [project]);
+
   return (
     <dialog
       ref={ref}
@@ -75,27 +92,86 @@ function ProjectDialog({ project, onClose }) {
             aria-label="Close project"
             onClick={onClose}
           >
-            <X size={24} />
+            <X size={24} weight="bold" />
           </button>
-          <img src={project.image} alt={project.alt} className="dialog-image" />
+
+          <div className="dialog-media-container">
+            <img
+              src={project.image}
+              alt={project.alt}
+              className="dialog-image"
+              width="1200"
+              height="800"
+            />
+            {project.metric && (
+              <span className="dialog-badge">{project.metric}</span>
+            )}
+          </div>
+
           <div className="dialog-content">
-            <span className="small-label">
-              {project.discipline} / {project.year}
-            </span>
+            <div className="dialog-header-meta">
+              <span className="badge-tag">{project.category}</span>
+              <span className="meta-divider">•</span>
+              <span className="dialog-discipline">{project.discipline}</span>
+              <span className="meta-divider">•</span>
+              <span className="dialog-year">{project.year}</span>
+            </div>
+
             <h2 id="project-title">{project.title}</h2>
-            <p>{project.description}</p>
-            <h3>The work</h3>
-            <ul>
-              {project.scope.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-            <h3>The outcome</h3>
-            <p>{project.outcome}</p>
+            <p className="dialog-lead">{project.summary}</p>
+
+            <div className="dialog-section">
+              <h3>Overview</h3>
+              <p>{project.description}</p>
+            </div>
+
+            {project.problem && (
+              <div className="dialog-section">
+                <h3>The Brief & Problem</h3>
+                <p>{project.problem}</p>
+              </div>
+            )}
+
+            {project.role && (
+              <div className="dialog-section">
+                <h3>My Role</h3>
+                <p className="role-highlight">{project.role}</p>
+              </div>
+            )}
+
+            <div className="dialog-section">
+              <h3>Scope & Work Delivered</h3>
+              <ul className="dialog-list">
+                {project.scope.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+
+            {project.tools && project.tools.length > 0 && (
+              <div className="dialog-section">
+                <h3>Tools & Technologies</h3>
+                <div className="tool-chips">
+                  {project.tools.map((tool) => (
+                    <span key={tool} className="tool-chip">
+                      {tool}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="dialog-section outcome-section">
+              <h3>Verified Outcome</h3>
+              <p className="outcome-text">{project.outcome}</p>
+            </div>
+
             {project.link && (
-              <ArrowLink href={project.link} newTab>
-                {project.linkLabel}
-              </ArrowLink>
+              <div className="dialog-actions">
+                <ArrowLink href={project.link} newTab className="btn-primary">
+                  {project.linkLabel}
+                </ArrowLink>
+              </div>
             )}
           </div>
         </div>
@@ -106,13 +182,15 @@ function ProjectDialog({ project, onClose }) {
 
 export default function App() {
   const root = useRef(null);
-  const portrait = useRef(null);
+  const portraitStage = useRef(null);
+  const portraitCard = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [filter, setFilter] = useState("All work");
   const [selectedProject, setSelectedProject] = useState(null);
   const [activeDiscipline, setActiveDiscipline] = useState(0);
   const [copied, setCopied] = useState(false);
   const copyTimer = useRef(null);
+
   const [theme, setTheme] = useState(() => {
     try {
       return (
@@ -131,56 +209,69 @@ export default function App() {
     } catch {}
   }, [theme]);
 
+  // Motion Choreography
   useEffect(() => {
     const mm = gsap.matchMedia();
+
     mm.add("(prefers-reduced-motion: no-preference)", () => {
-      const context = gsap.context(() => {
-        gsap.from(".hero-copy > *", {
-          y: 36,
+      const ctx = gsap.context(() => {
+        // Fast, polished hero choreography (~1-1.3 seconds total)
+        const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+        tl.from(".hero-badge", {
           opacity: 0,
-          duration: 1,
-          stagger: 0.13,
-          ease: "power3.out",
-          clearProps: "all",
-        });
-        gsap.from(".portrait-stage", {
-          y: 55,
-          rotation: 4,
-          opacity: 0,
-          duration: 1.3,
-          ease: "power3.out",
-          clearProps: "all",
-        });
-        gsap.to(".hero-orbit", {
-          rotation: 140,
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".hero",
-            start: "top top",
-            end: "bottom top",
-            scrub: 1,
-          },
-        });
+          y: 16,
+          duration: 0.5,
+        })
+          .from(
+            ".hero-mask-line > span",
+            {
+              y: "115%",
+              duration: 0.8,
+              stagger: 0.1,
+              ease: "power4.out",
+            },
+            "-=0.3"
+          )
+          .from(
+            ".portrait-composition",
+            {
+              opacity: 0,
+              scale: 0.94,
+              y: 35,
+              duration: 0.85,
+              ease: "power3.out",
+            },
+            "-=0.6"
+          )
+          .from(
+            ".hero-support-group > *",
+            {
+              opacity: 0,
+              y: 20,
+              stagger: 0.08,
+              duration: 0.6,
+            },
+            "-=0.5"
+          );
+
+        // General scroll reveals
         gsap.utils.toArray(".reveal").forEach((element) => {
           gsap.from(element, {
-            y: 38,
-            duration: 0.85,
-            ease: "power3.out",
-            scrollTrigger: { trigger: element, start: "top 92%", once: true },
+            y: 32,
+            opacity: 0,
+            duration: 0.7,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: element,
+              start: "top 88%",
+              once: true,
+            },
             clearProps: "all",
           });
         });
-        gsap.from(".manifesto-line", {
-          x: -35,
-          stagger: 0.12,
-          duration: 1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: ".manifesto",
-            start: "top 85%",
-            once: true,
-          },
-        });
+
+        // Reading progress indicator
         gsap.to(".reading-progress", {
           scaleX: 1,
           ease: "none",
@@ -188,18 +279,21 @@ export default function App() {
             trigger: root.current,
             start: "top top",
             end: "bottom bottom",
-            scrub: true,
+            scrub: 0.2,
           },
         });
       }, root);
-      return () => context.revert();
+
+      return () => ctx.revert();
     });
+
     return () => {
       mm.revert();
       clearTimeout(copyTimer.current);
     };
   }, []);
 
+  // Keyboard navigation for menu
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") setMenuOpen(false);
@@ -208,18 +302,35 @@ export default function App() {
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
-  function movePortrait(event) {
+  // Pointer depth on portrait composition (desktop only, no reduced motion)
+  function handlePortraitMove(event) {
     if (
-      matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)").matches
-    )
+      matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)").matches ||
+      !portraitCard.current
+    ) {
       return;
+    }
     const rect = event.currentTarget.getBoundingClientRect();
-    gsap.to(portrait.current, {
-      rotationY: ((event.clientX - rect.left) / rect.width - 0.5) * 9,
-      rotationX: -((event.clientY - rect.top) / rect.height - 0.5) * 7,
-      duration: 0.6,
-      ease: "power3.out",
+    const xRatio = (event.clientX - rect.left) / rect.width - 0.5;
+    const yRatio = (event.clientY - rect.top) / rect.height - 0.5;
+
+    gsap.to(portraitCard.current, {
+      rotationY: xRatio * 8,
+      rotationX: -yRatio * 8,
+      transformPerspective: 1000,
+      duration: 0.5,
+      ease: "power2.out",
       overwrite: "auto",
+    });
+  }
+
+  function handlePortraitLeave() {
+    if (!portraitCard.current) return;
+    gsap.to(portraitCard.current, {
+      rotationX: 0,
+      rotationY: 0,
+      duration: 0.7,
+      ease: "power2.out",
     });
   }
 
@@ -227,18 +338,19 @@ export default function App() {
     setFilter(value);
     requestAnimationFrame(() => {
       ScrollTrigger.refresh();
-      if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
         gsap.fromTo(
           ".project-card",
-          { opacity: 0.4, y: 18 },
+          { opacity: 0.35, y: 15 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.45,
-            stagger: 0.06,
+            duration: 0.35,
+            stagger: 0.05,
             clearProps: "all",
-          },
+          }
         );
+      }
     });
   }
 
@@ -253,16 +365,31 @@ export default function App() {
     }
   }
 
+  const filteredProjects = projects.filter(
+    (project) => filter === "All work" || project.category === filter
+  );
+
   return (
-    <div ref={root}>
+    <div ref={root} className="site-wrapper">
       <a className="skip-link" href="#main">
         Skip to content
       </a>
+
       <div className="reading-progress" aria-hidden="true" />
+
+      {/* Atmospheric Background Grid & Glow */}
+      <div className="bg-field" aria-hidden="true">
+        <div className="bg-glow" />
+        <div className="bg-grid" />
+      </div>
+
+      {/* Site Header */}
       <header className="site-header wrap">
-        <a href="#" className="wordmark" aria-label="Aakash home">
-          aakash<span>K.</span>
+        <a href="#" className="wordmark" aria-label="Aakash K home">
+          <span className="brand-name">AAKASH</span>
+          <span className="brand-accent">K.</span>
         </a>
+
         <nav
           aria-label="Main navigation"
           className={menuOpen ? "main-nav is-open" : "main-nav"}
@@ -270,7 +397,9 @@ export default function App() {
         >
           {[
             ["Work", "work"],
+            ["Proof", "proof"],
             ["About", "about"],
+            ["Creator", "creator"],
             ["Journey", "journey"],
           ].map(([label, id]) => (
             <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)}>
@@ -279,23 +408,27 @@ export default function App() {
           ))}
           <a
             href="#contact"
-            className="mobile-contact"
+            className="mobile-contact-cta"
             onClick={() => setMenuOpen(false)}
           >
-            Let’s talk <ArrowUpRight />
+            Let’s collaborate <ArrowUpRight size={18} />
           </a>
         </nav>
+
         <div className="header-actions">
           <button
             className="icon-button theme-toggle"
             aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           >
-            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+            {theme === "dark" ? <Sun size={20} weight="bold" /> : <Moon size={20} weight="bold" />}
           </button>
-          <a className="header-contact" href="#contact">
-            Let’s talk <ArrowUpRight size={17} />
+
+          <a className="header-contact-btn" href="#contact">
+            <span>Let’s collaborate</span>
+            <ArrowUpRight size={16} weight="bold" />
           </a>
+
           <button
             className="icon-button menu-toggle"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
@@ -303,95 +436,146 @@ export default function App() {
             aria-controls="main-nav"
             onClick={() => setMenuOpen(!menuOpen)}
           >
-            {menuOpen ? <X size={24} /> : <List size={24} />}
+            {menuOpen ? <X size={24} weight="bold" /> : <List size={24} weight="bold" />}
           </button>
         </div>
       </header>
+
       <main id="main">
+        {/* HERO SECTION */}
         <section className="hero wrap" aria-labelledby="hero-heading">
-          <div className="hero-copy">
-            <p className="hero-intro">
-              <span className="intro-line" /> Hey, I’m Aakash K.
-            </p>
-            <h1 id="hero-heading">
-              Not one box.
-              <br />A whole{" "}
-              <span className="world-word">
-                world
-                <svg viewBox="0 0 300 18" aria-hidden="true">
-                  <path d="M4 12 Q150 0 294 10" />
-                </svg>
+          <div className="hero-content">
+            <div className="hero-badge">
+              <span className="badge-dot" />
+              <span className="badge-text">
+                Marketer • Brand Builder • AI &amp; Data Science Student
               </span>
-              .
+            </div>
+
+            <h1 id="hero-heading" className="hero-title">
+              <span className="hero-mask-line">
+                <span>I turn attention</span>
+              </span>
+              <span className="hero-mask-line">
+                <span className="text-lime-accent">into impact.</span>
+              </span>
             </h1>
-            <p className="hero-description">
-              I build brands, tell stories, and connect creativity with
-              technology. Always curious. Never one-dimensional.
-            </p>
-            <ArrowLink href="#work" className="primary-link">
-              Explore my work
-            </ArrowLink>
+
+            <div className="hero-support-group">
+              <p className="hero-description">
+                I’m Aakash K — blending brand strategy, content, and web
+                development to help people and businesses stand out.
+              </p>
+
+              <div className="hero-actions">
+                <a href="#work" className="btn-primary">
+                  <span>Explore my work</span>
+                  <ArrowDown size={18} weight="bold" />
+                </a>
+
+                <a href="#contact" className="btn-secondary">
+                  <span>Let’s collaborate</span>
+                  <ArrowUpRight size={18} weight="bold" />
+                </a>
+              </div>
+
+              <div className="hero-location-tag">
+                <Compass size={16} weight="duotone" />
+                <span>Based between Coimbatore &amp; Tuticorin, Tamil Nadu</span>
+              </div>
+            </div>
           </div>
+
           <div
             className="portrait-stage"
-            onPointerMove={movePortrait}
-            onPointerLeave={() =>
-              gsap.to(portrait.current, {
-                rotationX: 0,
-                rotationY: 0,
-                duration: 0.7,
-              })
-            }
+            ref={portraitStage}
+            onPointerMove={handlePortraitMove}
+            onPointerLeave={handlePortraitLeave}
           >
-            <div className="portrait-disc" aria-hidden="true" />
-            <div className="hero-orbit" aria-hidden="true">
-              <Asterisk weight="light" />
+            <div className="portrait-composition" ref={portraitCard}>
+              <div className="portrait-accent-halo" aria-hidden="true" />
+              <div className="portrait-lime-chip" aria-hidden="true">
+                <Sparkle size={18} weight="fill" />
+                <span>Strategy + Code</span>
+              </div>
+
+              <div className="portrait-frame">
+                <img
+                  src="/images/aakash.webp"
+                  alt="Aakash K, marketer, brand builder and creator"
+                  fetchPriority="high"
+                  width="678"
+                  height="1024"
+                  className="hero-portrait-img"
+                />
+              </div>
+
+              <div className="portrait-footer-card">
+                <div className="portrait-signature-box">
+                  <span className="portrait-sub">Creative Technologist</span>
+                  <span className="portrait-name">Aakash K.</span>
+                </div>
+                <div className="portrait-status-pill">
+                  <span className="live-dot" />
+                  <span>Open for Projects</span>
+                </div>
+              </div>
             </div>
-            <div className="portrait-frame" ref={portrait}>
-              <img
-                src="/images/aakash.webp"
-                alt="Aakash K, marketer, brand builder and creator"
-                fetchPriority="high"
-                width="678"
-                height="1024"
-              />
-            </div>
-            <div className="portrait-note">
-              A little strategy.
-              <br />A lot of curiosity.
-            </div>
-            <span className="portrait-signature" aria-hidden="true">
-              ak.
-            </span>
           </div>
         </section>
-        <div className="role-bar wrap" aria-label="Explore my disciplines">
-          {disciplines.map((item, index) => (
-            <a
-              href="#disciplines"
-              key={item.name}
-              onClick={() => setActiveDiscipline(index)}
-            >
-              {item.name}
-              <ArrowUpRight size={19} />
-            </a>
-          ))}
-        </div>
 
+        {/* PROOF & CREDIBILITY SECTION */}
+        <section
+          className="proof-section wrap"
+          id="proof"
+          aria-label="Verified achievements and proof"
+        >
+          <div className="proof-grid">
+            {proofs.map((proof, idx) => (
+              <div key={idx} className="proof-card reveal">
+                <div className="proof-top">
+                  <span className="proof-number">{proof.value}</span>
+                  {proof.badge && (
+                    <span className="proof-badge">{proof.badge}</span>
+                  )}
+                </div>
+                <h3 className="proof-title">{proof.label}</h3>
+                <p className="proof-detail">{proof.detail}</p>
+                {proof.link && (
+                  <a
+                    href={proof.link}
+                    {...external}
+                    className="proof-link"
+                    aria-label={`Verify ${proof.label} on external site`}
+                  >
+                    <span>{proof.linkLabel}</span>
+                    <ArrowUpRight size={14} weight="bold" />
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* SELECTED WORK SECTION */}
         <section
           className="work-section section-space wrap"
           id="work"
           aria-labelledby="work-heading"
         >
-          <div className="section-heading reveal">
-            <p className="small-label">Selected work</p>
-            <h2 id="work-heading">
-              Good ideas.
+          <div className="section-head reveal">
+            <div className="section-label-group">
+              <span className="section-pill">Selected Work</span>
+              <span className="section-subtext">Case Studies &amp; Impact</span>
+            </div>
+            <h2 id="work-heading" className="section-title">
+              Crafted with intention.
               <br />
-              <span className="muted">Real-world impact.</span>
+              <span className="muted">Proven in the real world.</span>
             </h2>
           </div>
-          <div className="work-toolbar">
+
+          <div className="work-toolbar reveal">
             <div className="filters" role="group" aria-label="Filter projects">
               {filters.map((item) => (
                 <button
@@ -404,330 +588,434 @@ export default function App() {
                 </button>
               ))}
             </div>
+
             <span className="work-count" aria-live="polite">
-              {filter === "All work"
-                ? projects.length
-                : projects.filter((p) => p.category === filter).length}{" "}
-              projects
+              {filteredProjects.length === 1
+                ? "1 project"
+                : `${filteredProjects.length} projects`}
             </span>
           </div>
+
           <div className="project-grid">
-            {projects
-              .filter(
-                (project) =>
-                  filter === "All work" || project.category === filter,
-              )
-              .map((project) => (
-                <button
-                  key={project.id}
-                  className={`project-card project-${project.id}`}
-                  onClick={() => setSelectedProject(project)}
-                  aria-label={`View ${project.title} project`}
-                >
-                  <div className="project-image">
-                    <img
-                      src={project.image}
-                      alt={project.alt}
-                      loading="lazy"
-                      width="900"
-                      height="680"
-                    />
-                    <span className="project-open">
-                      <ArrowUpRight size={27} />
+            {filteredProjects.map((project) => (
+              <button
+                key={project.id}
+                className={`project-card project-${project.id}`}
+                onClick={() => setSelectedProject(project)}
+                aria-label={`View ${project.title} project`}
+              >
+                <div className="project-image-box">
+                  <img
+                    src={project.image}
+                    alt={project.alt}
+                    loading="lazy"
+                    width="900"
+                    height="680"
+                    className="project-thumb"
+                  />
+                  <div className="project-overlay">
+                    <span className="project-cta-label">
+                      <span>View case study</span>
+                      <ArrowUpRight size={20} weight="bold" />
                     </span>
                   </div>
-                  <div className="project-meta">
-                    <span>{project.discipline}</span>
-                    <span>{project.year}</span>
+                  {project.metric && (
+                    <span className="project-pill-badge">{project.metric}</span>
+                  )}
+                </div>
+
+                <div className="project-body">
+                  <div className="project-meta-line">
+                    <span className="project-cat">{project.category}</span>
+                    <span className="meta-sep">•</span>
+                    <span className="project-disc">{project.discipline}</span>
+                    <span className="meta-sep">•</span>
+                    <span className="project-yr">{project.year}</span>
                   </div>
-                  <h3>{project.title}</h3>
-                  <p>{project.summary}</p>
-                </button>
-              ))}
+
+                  <h3 className="project-heading">{project.title}</h3>
+                  <p className="project-summary">{project.summary}</p>
+
+                  <div className="project-footer-affordance">
+                    <span className="affordance-text">Read case study</span>
+                    <span className="affordance-icon">
+                      <ArrowUpRight size={18} weight="bold" />
+                    </span>
+                  </div>
+                </div>
+              </button>
+            ))}
           </div>
         </section>
 
+        {/* ABOUT & DISCIPLINES SECTION */}
         <section
           className="about-section section-space wrap"
           id="about"
           aria-labelledby="about-heading"
         >
-          <div className="about-heading reveal">
-            <Asterisk className="about-star" size={54} weight="light" />
-            <h2 id="about-heading">
-              Different interests.
-              <br />
-              One connected mind.
-            </h2>
-          </div>
-          <div className="about-body">
-            <p className="about-lead reveal">
-              I don’t fit into one box.
-              <br />
-              And I’ve stopped trying to.
-            </p>
-            <div className="about-prose reveal">
-              <p>
-                I’m Aakash, a marketer, creator and AI & Data Science student
-                based between Coimbatore and Tuticorin, Tamil Nadu.
+          <div className="about-layout">
+            <div className="about-narrative reveal">
+              <div className="section-label-group">
+                <span className="section-pill">About Aakash K</span>
+              </div>
+              <h2 id="about-heading" className="section-title">
+                Different disciplines.
+                <br />
+                <span className="text-lime-accent">One connected vision.</span>
+              </h2>
+
+              <p className="about-lead">
+                I don’t fit into one box — and I’ve stopped trying to.
               </p>
-              <p>
-                What started with a camera in 2020 became a curiosity about why
-                people stop, watch, trust, and act. Today, I bring that
-                curiosity to brands, digital experiences, and technology.
-              </p>
-              <p>
-                I believe technology should solve real problems. Creativity
-                should make those solutions understandable and memorable.
-              </p>
-              <a href="#journey" className="text-link">
-                The story so far <ArrowDown size={18} />
-              </a>
-            </div>
-          </div>
-          <div className="disciplines" id="disciplines">
-            {disciplines.map((item, index) => (
-              <div
-                className={`discipline ${activeDiscipline === index ? "expanded" : ""}`}
-                key={item.name}
-              >
-                <h3>
-                  <button
-                    aria-expanded={activeDiscipline === index}
-                    aria-controls={`discipline-${index}`}
-                    onClick={() =>
-                      setActiveDiscipline(
-                        activeDiscipline === index ? null : index,
-                      )
-                    }
-                  >
-                    <span>{item.name}</span>
-                    <span className="discipline-cue">{item.cue}</span>
-                    {activeDiscipline === index ? (
-                      <Minus size={24} />
-                    ) : (
-                      <Plus size={24} />
-                    )}
-                  </button>
-                </h3>
-                <div
-                  id={`discipline-${index}`}
-                  className="discipline-details"
-                  hidden={activeDiscipline !== index}
-                >
-                  <p>{item.description}</p>
-                  <div className="tag-list">
-                    {item.tags.map((tag) => (
-                      <span key={tag}>{tag}</span>
-                    ))}
+
+              <div className="about-prose">
+                <p>
+                  I’m Aakash, a marketer, creative director, and first-year
+                  B.Tech Artificial Intelligence &amp; Data Science student at
+                  Rathinam Technical Campus, based between Coimbatore and
+                  Tuticorin, Tamil Nadu.
+                </p>
+                <p>
+                  My journey began behind the camera in 2020. That experimentation
+                  with camera angles, pacing, and storytelling evolved into
+                  commercial video campaigns, personal branding systems, and
+                  scalable web engineering.
+                </p>
+                <p>
+                  I believe technology should solve real-world problems, while
+                  creativity makes those solutions understandable, trusted, and
+                  impossible to ignore.
+                </p>
+              </div>
+
+              <div className="about-philosophy-card">
+                <div className="philosophy-header">
+                  <ShieldCheck size={22} weight="duotone" />
+                  <span>My Creative Rule</span>
+                </div>
+                <div className="philosophy-steps">
+                  <div className="step-item">
+                    <span className="step-num">01</span>
+                    <span className="step-text">Content <strong>first.</strong></span>
+                  </div>
+                  <div className="step-item">
+                    <span className="step-num">02</span>
+                    <span className="step-text">Design <strong>second.</strong></span>
+                  </div>
+                  <div className="step-item">
+                    <span className="step-num">03</span>
+                    <span className="step-text">Effects <strong>third.</strong></span>
                   </div>
                 </div>
+                <p className="philosophy-sub">
+                  Confidence without arrogance. Creativity without chaos.
+                  Technology without gimmicks.
+                </p>
               </div>
-            ))}
+            </div>
+
+            {/* Disciplines Accordion */}
+            <div className="disciplines-column reveal" id="disciplines">
+              <div className="disciplines-header">
+                <h3>Core Disciplines &amp; Services</h3>
+                <p>Explore how I help individuals and businesses grow</p>
+              </div>
+
+              <div className="disciplines-accordion">
+                {disciplines.map((item, index) => {
+                  const isOpen = activeDiscipline === index;
+                  return (
+                    <div
+                      className={`discipline-row ${isOpen ? "expanded" : ""}`}
+                      key={item.name}
+                    >
+                      <button
+                        className="discipline-btn"
+                        aria-expanded={isOpen}
+                        aria-controls={`discipline-${index}`}
+                        onClick={() =>
+                          setActiveDiscipline(isOpen ? null : index)
+                        }
+                      >
+                        <div className="discipline-btn-left">
+                          <span className="discipline-index">0{index + 1}</span>
+                          <span className="discipline-name">{item.name}</span>
+                          <span className="discipline-cue">{item.cue}</span>
+                        </div>
+                        <div className="discipline-icon-box">
+                          {isOpen ? (
+                            <Minus size={20} weight="bold" />
+                          ) : (
+                            <Plus size={20} weight="bold" />
+                          )}
+                        </div>
+                      </button>
+
+                      <div
+                        id={`discipline-${index}`}
+                        className="discipline-details"
+                        hidden={!isOpen}
+                      >
+                        <p className="discipline-desc">{item.description}</p>
+                        <div className="tag-list">
+                          {item.tags.map((tag) => (
+                            <span key={tag} className="tag-chip">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </section>
 
+        {/* CREATOR PLATFORM SPOTLIGHT */}
         <section
           className="creator-section section-space wrap"
           id="creator"
           aria-labelledby="creator-heading"
         >
-          <div className="creator-visual reveal">
-            <img
-              src="/images/creator.webp"
-              alt="A microphone held at an outdoor event during a creator shoot"
-              loading="lazy"
-              width="750"
-              height="900"
-            />
-            <a
-              href="https://www.instagram.com/life.with_aakash/"
-              {...external}
-              className="play-link"
-              aria-label="Watch Life With Aakash on Instagram"
-            >
-              <Play weight="fill" size={25} />
-            </a>
-          </div>
-          <div className="creator-copy reveal">
-            <p className="small-label">Life with Aakash</p>
-            <h2 id="creator-heading">
-              Behind the work,
-              <br />
-              there’s a human.
-            </h2>
-            <p>
-              Honest stories about growth, discipline, and figuring it out as
-              you go. A space to share what I’m learning, not pretend I have
-              every answer.
-            </p>
-            <div className="creator-stat">
-              <strong>59.1K</strong>
-              <span>
-                peak organic reel views
-                <br />
-                on Life With Aakash
-              </span>
+          <div className="creator-container">
+            <div className="creator-visual reveal">
+              <div className="creator-img-frame">
+                <img
+                  src="/images/creator.webp"
+                  alt="Microphone held at an outdoor event during a commercial creator shoot"
+                  loading="lazy"
+                  width="750"
+                  height="900"
+                  className="creator-img"
+                />
+                <a
+                  href="https://www.instagram.com/life.with_aakash/"
+                  {...external}
+                  className="play-pulse-btn"
+                  aria-label="Watch Life With Aakash on Instagram"
+                >
+                  <Play weight="fill" size={26} />
+                </a>
+              </div>
             </div>
-            <ArrowLink
-              href="https://www.instagram.com/life.with_aakash/"
-              newTab
-            >
-              Meet the creator
-            </ArrowLink>
-            <a
-              href="https://www.instagram.com/mr._aku_vlogs/"
-              {...external}
-              className="creator-origin"
-            >
-              It began with Mr Aku Vlogs in 2020 <ArrowUpRight size={16} />
-            </a>
+
+            <div className="creator-copy reveal">
+              <div className="section-label-group">
+                <span className="section-pill">Life with Aakash</span>
+              </div>
+              <h2 id="creator-heading" className="section-title">
+                Behind the work,
+                <br />
+                <span className="text-lime-accent">there’s a human voice.</span>
+              </h2>
+              <p className="creator-lead">
+                Honest stories about personal growth, creative discipline, and
+                building something meaningful from scratch.
+              </p>
+
+              <div className="creator-stat-box">
+                <div className="creator-stat-val">59.1K</div>
+                <div className="creator-stat-text">
+                  <strong>Peak Organic Reel Views</strong>
+                  <span>Achieved on personal storytelling channel Life With Aakash</span>
+                </div>
+              </div>
+
+              <div className="creator-links-group">
+                <ArrowLink
+                  href="https://www.instagram.com/life.with_aakash/"
+                  newTab
+                  className="btn-primary"
+                >
+                  Watch Life With Aakash
+                </ArrowLink>
+
+                <a
+                  href="https://www.instagram.com/mr._aku_vlogs/"
+                  {...external}
+                  className="creator-origin-link"
+                >
+                  <span>Founded on Mr Aku Vlogs in 2020</span>
+                  <ArrowUpRight size={16} weight="bold" />
+                </a>
+              </div>
+            </div>
           </div>
         </section>
 
+        {/* JOURNEY & RECOGNITION SECTION */}
         <section
           className="journey-section section-space wrap"
           id="journey"
           aria-labelledby="journey-heading"
         >
-          <h2 id="journey-heading" className="reveal">
-            Still learning.
-            <br />
-            <span className="muted">Always building.</span>
-          </h2>
-          <div className="timeline">
-            {timeline.map((item) => (
-              <article className="timeline-item reveal" key={item.year}>
-                <span className="timeline-year">{item.year}</span>
-                <div>
-                  <h3>{item.title}</h3>
-                  <p>{item.text}</p>
-                </div>
-              </article>
-            ))}
+          <div className="section-head reveal">
+            <div className="section-label-group">
+              <span className="section-pill">Evolution</span>
+            </div>
+            <h2 id="journey-heading" className="section-title">
+              Still learning.
+              <br />
+              <span className="muted">Always building.</span>
+            </h2>
           </div>
-          <div className="recognition reveal">
-            <img
-              src="/images/award.webp"
-              alt="Aakash receiving the Twin Heart Business Excellence Award"
-              loading="lazy"
-              width="500"
-              height="400"
-            />
-            <div>
-              <span className="small-label">A few meaningful milestones</span>
-              <h3>
-                Recognized for
-                <br />
-                showing up.
-              </h3>
-              <p>
-                Twin Heart Business Excellence Award, Best Reels Creator at the
-                Tuticorin Creator Showcase, and the Young Informative Content
-                Award.
-              </p>
-              <span className="recognition-year">
-                Creator recognition / 2025
-              </span>
+
+          <div className="journey-layout">
+            <div className="timeline-track">
+              {timeline.map((item, idx) => (
+                <article className="timeline-card reveal" key={item.year + idx}>
+                  <div className="timeline-marker">
+                    <span className="timeline-dot" />
+                    <span className="timeline-year">{item.year}</span>
+                  </div>
+                  <div className="timeline-content">
+                    <h3 className="timeline-title">{item.title}</h3>
+                    <p className="timeline-desc">{item.text}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <div className="recognition-card reveal">
+              <div className="recognition-image-wrapper">
+                <img
+                  src="/images/award.webp"
+                  alt="Aakash receiving the Twin Heart Business Excellence Award"
+                  loading="lazy"
+                  width="500"
+                  height="400"
+                  className="recognition-img"
+                />
+              </div>
+
+              <div className="recognition-content">
+                <div className="recognition-badge">Honors &amp; Recognition</div>
+                <h3 className="recognition-title">
+                  Recognized for
+                  <br />
+                  showing up &amp; creating.
+                </h3>
+                <p className="recognition-text">
+                  Recipient of the <strong>Twin Heart Business Excellence Award</strong> ("The Vlogging Kid") for digital storytelling and youth creator entrepreneurship, <strong>Best Reels Creator</strong> at the Tuticorin Creator Showcase, and the <strong>Young Informative Content Award</strong>.
+                </p>
+                <div className="recognition-meta">
+                  <span className="rec-year">Creator Recognition / 2025</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        <section
-          className="manifesto section-space wrap"
-          aria-label="My creative philosophy"
-        >
-          <p>My creative rule is simple.</p>
-          <div className="manifesto-line">
-            Content <span>first.</span>
-          </div>
-          <div className="manifesto-line">
-            Design <span>second.</span>
-          </div>
-          <div className="manifesto-line">
-            Effects <span>third.</span>
-          </div>
-          <div className="manifesto-foot">
-            <Asterisk size={34} weight="light" />
-            <p>
-              Confidence without arrogance.
-              <br />
-              Creativity without chaos.
-              <br />
-              Technology without gimmicks.
-            </p>
-          </div>
-        </section>
-
+        {/* CONTACT SECTION */}
         <section
           className="contact-section section-space wrap"
           id="contact"
           aria-labelledby="contact-heading"
         >
-          <p className="small-label">Have an idea in mind?</p>
-          <h2 id="contact-heading">
-            Let’s make
-            <br />
-            <a href={`mailto:${email}`}>
-              something matter.
-              <ArrowUpRight weight="light" />
-            </a>
-          </h2>
-          <div className="contact-bottom">
-            <div>
-              <a className="email-link" href={`mailto:${email}`}>
-                {email}
-              </a>
-              <button
-                className="copy-button"
-                onClick={copyEmail}
-                aria-label={copied ? "Email copied" : "Copy email address"}
-              >
-                {copied ? <Check size={19} /> : <Copy size={19} />}
-              </button>
-              <span className="copy-feedback" role="status">
-                {copied ? "Copied!" : ""}
-              </span>
-              <p>Coimbatore & Tuticorin, Tamil Nadu, India</p>
+          <div className="contact-box reveal">
+            <div className="contact-head">
+              <div className="section-label-group">
+                <span className="section-pill">Start a Conversation</span>
+              </div>
+              <h2 id="contact-heading" className="contact-title">
+                Your next idea.
+                <br />
+                <a href={`mailto:${email}`} className="contact-hero-link">
+                  <span>Let’s make it happen.</span>
+                  <ArrowUpRight size={38} weight="light" className="contact-arrow" />
+                </a>
+              </h2>
             </div>
-            <a href="tel:+918590637715" className="phone-link">
-              +91 85906 37715 <ArrowUpRight size={18} />
-            </a>
+
+            <div className="contact-grid">
+              <div className="contact-block">
+                <span className="contact-label">Direct Email</span>
+                <div className="email-action-row">
+                  <a className="email-link" href={`mailto:${email}`}>
+                    {email}
+                  </a>
+                  <button
+                    className="copy-button"
+                    onClick={copyEmail}
+                    aria-label={copied ? "Email copied" : "Copy email address"}
+                  >
+                    {copied ? <Check size={18} weight="bold" /> : <Copy size={18} />}
+                  </button>
+                  <span className="copy-feedback" role="status">
+                    {copied ? "Copied!" : ""}
+                  </span>
+                </div>
+                <p className="contact-sub">Coimbatore &amp; Tuticorin, Tamil Nadu, India</p>
+              </div>
+
+              <div className="contact-block">
+                <span className="contact-label">Phone &amp; WhatsApp</span>
+                <a href={`tel:${phoneTel}`} className="phone-link">
+                  <Phone size={18} weight="duotone" />
+                  <span>{phone}</span>
+                  <ArrowUpRight size={16} />
+                </a>
+                <p className="contact-sub">Available for client and agency collaborations</p>
+              </div>
+            </div>
           </div>
         </section>
       </main>
+
+      {/* FOOTER */}
       <footer className="site-footer wrap">
-        <a className="wordmark" href="#">
-          aakash<span>K.</span>
-        </a>
-        <p>Turning ideas into experiences.</p>
-        <div className="social-links">
-          <a
-            href="https://www.instagram.com/life.with_aakash/"
-            {...external}
-            aria-label="Instagram"
-          >
-            <InstagramLogo size={22} />
+        <div className="footer-left">
+          <a className="wordmark" href="#" aria-label="Back to top">
+            <span className="brand-name">AAKASH</span>
+            <span className="brand-accent">K.</span>
           </a>
-          <a
-            href="https://linkedin.com/in/aakash-k-028a2b389"
-            {...external}
-            aria-label="LinkedIn"
-          >
-            <LinkedinLogo size={22} />
-          </a>
-          <a
-            href="https://github.com/itzaakash15-creator"
-            {...external}
-            aria-label="GitHub"
-          >
-            <GithubLogo size={22} />
+          <p className="footer-motto">Turning ideas into experiences.</p>
+        </div>
+
+        <div className="footer-center">
+          <span className="footer-copy">
+            © {new Date().getFullYear()} Aakash K. All rights reserved.
+          </span>
+        </div>
+
+        <div className="footer-right">
+          <div className="social-links" aria-label="Social profiles">
+            <a
+              href="https://www.instagram.com/life.with_aakash/"
+              {...external}
+              aria-label="Instagram"
+              className="social-btn"
+            >
+              <InstagramLogo size={22} weight="bold" />
+            </a>
+            <a
+              href="https://linkedin.com/in/aakash-k-028a2b389"
+              {...external}
+              aria-label="LinkedIn"
+              className="social-btn"
+            >
+              <LinkedinLogo size={22} weight="bold" />
+            </a>
+            <a
+              href="https://github.com/itzaakash15-creator"
+              {...external}
+              aria-label="GitHub"
+              className="social-btn"
+            >
+              <GithubLogo size={22} weight="bold" />
+            </a>
+          </div>
+
+          <a href="#" className="back-top-btn" aria-label="Back to top">
+            <ArrowUpRight size={20} weight="bold" />
           </a>
         </div>
-        <a href="#" className="back-top" aria-label="Back to top">
-          <ArrowUpRight size={23} />
-        </a>
       </footer>
+
+      {/* Project Case Study Dialog */}
       <ProjectDialog
         project={selectedProject}
         onClose={() => setSelectedProject(null)}

@@ -9,15 +9,20 @@ export const projects = [
     alt: "Aakash operating a camera and gimbal on a commercial shoot",
     summary: "From the first hook to the final cut.",
     description:
-      "A full-time digital marketing and creative internship in Tuticorin, turning local business stories into commercial video campaigns across retail, automotive, and food.",
+      "A full-time digital marketing and creative internship in Tuticorin, turning local business stories into commercial video campaigns across retail, automotive, and food sectors.",
+    problem:
+      "Regional retail and automotive brands needed high-retention commercial video content and consistent publishing schedules without missing key marketing deadlines.",
+    role: "Digital Marketing & Creative Production Intern",
     scope: [
-      "Content research & scripting",
-      "On-location video direction",
-      "Editing & post-production",
-      "Talentrix influencer campaigns",
+      "Hook research, storyboarding & scriptwriting",
+      "On-location multi-angle video direction & gimbal stabilization",
+      "End-to-end post-production, sound design & pacing",
+      "Talentrix influencer campaign coordination",
     ],
+    tools: ["Sony Alpha Camera", "DJI Gimbal", "Premiere Pro", "CapCut", "Final Cut Pro"],
     outcome:
-      "Completed commercial video series with 100% deadline adherence during the May-July 2026 internship.",
+      "Delivered complete commercial video series with a 100% on-time deadline adherence record during the May–July 2026 internship.",
+    metric: "100% on-time delivery",
     link: "https://aakashk.vercel.app",
     linkLabel: "Explore original portfolio",
   },
@@ -28,18 +33,23 @@ export const projects = [
     discipline: "Personal branding",
     year: "2026",
     image: "/images/branding.webp",
-    alt: "Behind the scenes of a personal branding client shoot",
+    alt: "Behind the scenes of an on-location personal branding shoot with director's notebook and camera rig",
     summary: "A clear identity. A reason to remember.",
     description:
-      "Positioning, content strategy, visual moodboards and short-form storytelling for personal brands and businesses, including U6NICK and Purple Collection.",
+      "Positioning, content strategy, visual moodboards, and short-form storytelling for personal brands and regional businesses, including editorial model U6NICK and fashion retailer Purple Collection.",
+    problem:
+      "Talented individuals and growing businesses often struggle to communicate who they are clearly, resulting in low social retention and inconsistent public perception.",
+    role: "Brand Strategist & Creative Director",
     scope: [
-      "Brand positioning",
-      "Instagram profile strategy",
-      "Visual direction",
-      "Hook-led short-form content",
+      "Brand identity positioning & audience persona mapping",
+      "Instagram profile optimization & content architecture",
+      "Visual moodboards & on-set styling direction",
+      "Hook-led short-form reels & scripted dialogues",
     ],
+    tools: ["Moodboards", "Instagram Strategy", "Camera Rigs", "Creative Scripting"],
     outcome:
-      "U6NICK grew to approximately 3,000 engaged followers and attracted inbound casting inquiries. Purple Collection campaigns recorded 3,000+ organic reach growth.",
+      "U6NICK grew to approximately 3,000 engaged followers and drove inbound casting inquiries. Purple Collection campaigns delivered 3,000+ organic reach growth.",
+    metric: "3K+ community reach",
   },
   {
     id: "jayashakthi",
@@ -48,16 +58,23 @@ export const projects = [
     discipline: "Web development",
     year: "2025-2026",
     image: "/images/travel.webp",
-    alt: "Jayashakthi Tours and Travels website project",
+    alt: "Jayashakthi Tours and Travels commercial website on desktop and mobile devices",
     summary: "A travel business, ready for the web.",
     description:
-      "A commercial fleet booking website for Jayashakthi Tours & Travels, connecting its digital presence to the customer booking journey.",
+      "A commercial fleet booking web platform engineered for Jayashakthi Tours & Travels, modernizing the customer booking flow and operational fleet oversight.",
+    problem:
+      "The tour and travel fleet operated with manual inquiry coordination and lacked a branded, responsive digital presence to capture direct bookings.",
+    role: "Independent Web Developer",
     scope: [
-      "Website design & development",
-      "Fleet booking experience",
-      "Custom administration portal",
+      "Responsive front-end web architecture & visual design",
+      "Fleet vehicle showcase with direct inquiry flows",
+      "Custom administration portal for fleet bookings",
+      "Mobile-first performance and SEO optimization",
     ],
-    outcome: "Delivered a live commercial platform for a real travel business.",
+    tools: ["HTML5 / CSS3", "JavaScript ES6+", "Vite", "Responsive UI"],
+    outcome:
+      "Engineered and launched a live commercial booking platform for an operational travel and tours business.",
+    metric: "Live commercial platform",
     link: "https://jayashakthitoursandtravels.com",
     linkLabel: "Visit live website",
   },
@@ -68,49 +85,93 @@ export const projects = [
     discipline: "Content creation",
     year: "2020 - Now",
     image: "/images/content.jpg",
-    alt: "Aakash with actor Roshan during a music album shoot",
+    alt: "Aakash with actor Roshan during a music album video shoot",
     summary: "Where the whole journey began.",
     description:
-      "Mr Aku Vlogs started in 2020 as a place to experiment with cameras, editing, storytelling and audience psychology. It grew into commercial collaborations including a music album shoot with actor Roshan, promotional coverage for the film Paranthu Po, media shoots for Tourist Family, and promotional content for Nayanthara Production.",
+      "Launched in September 2020 as a creative laboratory to test camera framing, editing rhythms, and audience psychology. Evolved into commercial media collaborations and film promotions.",
+    problem:
+      "Mastering visual storytelling from the ground up through consistent publishing, real-world audience feedback, and translating creator insights into professional production shoots.",
+    role: "Creator, Director & Post-Production Editor",
     scope: [
-      "Vlogging & content creation",
-      "Music album & film promo shoots",
-      "On-camera VJ presentation",
-      "Audience retention testing",
+      "Storytelling, camera work & audience retention testing",
+      "Music album video shoot with actor Roshan",
+      "Promotional coverage for Tamil feature film Paranthu Po",
+      "Commercial shoots for Tourist Family & Nayanthara Production",
+      "On-camera VJ presentation for SalemRR Biriyani & Vedha Rice",
     ],
+    tools: ["Camera Rigs", "Wireless Audio", "Premiere Pro", "CapCut", "Final Cut Pro"],
     outcome:
-      "2,177+ followers across 332 posts, plus commercial shoots for film and music productions.",
+      "Built an audience of 2,177+ followers across 332 posts, progressing to commercial productions and regional creator recognition.",
+    metric: "2,177+ followers / 332 posts",
+    link: "https://www.instagram.com/mr._aku_vlogs/",
+    linkLabel: "View Mr Aku Vlogs on Instagram",
+  },
+];
+
+export const proofs = [
+  {
+    value: "59.1K",
+    label: "Peak organic views",
+    detail: "Highest single-reel organic reach achieved on personal platform Life With Aakash",
+    link: "https://www.instagram.com/life.with_aakash/",
+    linkLabel: "@life.with_aakash",
+  },
+  {
+    value: "100%",
+    label: "On-time delivery",
+    detail: "Commercial video campaigns executed with zero missed deadlines at Digi Marketrix",
+    badge: "Agency verified",
+  },
+  {
+    value: "2025",
+    label: "Business Excellence",
+    detail: "Twin Heart Business Excellence Award ('The Vlogging Kid') for youth creator entrepreneurship",
+    badge: "Regional award",
+  },
+  {
+    value: "Live",
+    label: "Fleet platform",
+    detail: "Engineered responsive booking portal & admin backend for Jayashakthi Tours & Travels",
+    link: "https://jayashakthitoursandtravels.com",
+    linkLabel: "jayashakthitoursandtravels.com",
   },
 ];
 
 export const disciplines = [
   {
-    name: "Marketer",
-    cue: "Strategy meets instinct.",
+    name: "Marketing",
+    cue: "Strategy // Growth",
     description:
-      "Digital strategy, social campaigns and content systems that turn attention into trust.",
-    tags: ["Digital strategy", "Audience growth", "Social media"],
+      "Digital strategy, social media campaigns, and audience acquisition systems that convert fleeting attention into measurable brand trust.",
+    tags: ["Digital strategy", "Audience growth", "Campaign planning", "Social media"],
   },
   {
-    name: "Brand builder",
-    cue: "Be known for something.",
+    name: "Brand building",
+    cue: "Identity // Trust",
     description:
-      "Positioning, visual direction and a consistent presence that make people and businesses recognizable.",
-    tags: ["Positioning", "Personal branding", "Visual direction"],
+      "Positioning, visual moodboards, and distinct narrative presence that make businesses and individuals memorable in noisy markets.",
+    tags: ["Brand positioning", "Visual direction", "Identity strategy", "Personal branding"],
   },
   {
-    name: "Creator",
-    cue: "Make them feel it.",
+    name: "Content creation",
+    cue: "Media // Storytelling",
     description:
-      "From scripting and camera work to the final edit, I shape stories worth stopping for.",
-    tags: ["Videography", "Creative direction", "Video editing"],
+      "End-to-end commercial video production—from research-backed hooks and scriptwriting to on-location direction, cinematography, and rhythm editing.",
+    tags: ["Videography", "Creative direction", "Video editing", "Short-form content"],
   },
   {
     name: "Speaker",
     cue: "Ideas deserve a voice.",
     description:
-      "On-camera presentation and conversations about creativity, technology and building something from scratch.",
-    tags: ["On-camera hosting", "Storytelling", "Communication"],
+      "On-camera hosting, keynote storytelling, and grounded discussions exploring creativity, emerging technology, and building from scratch.",
+    tags: ["On-camera hosting", "Storytelling", "Public speaking", "Communication"],
+  },
+  {
+    name: "Web development",
+    cue: "Code // Platforms",
+    description:
+      "Responsive front-end development, commercial web platforms, and administration interfaces engineered to scale real-world businesses.",
+    tags: ["HTML5 & CSS3", "JavaScript ES6+", "React & Vite", "Responsive UI"],
   },
 ];
 
@@ -118,21 +179,26 @@ export const timeline = [
   {
     year: "2020",
     title: "It started with a camera.",
-    text: "Launched Mr Aku Vlogs. Learning camera work, editing and audience psychology by making and sharing.",
+    text: "Launched Mr Aku Vlogs (@mr._aku_vlogs). Learned camera handling, editing workflows, and audience psychology by making and publishing 300+ videos.",
   },
   {
     year: "2025",
     title: "Curiosity became craft.",
-    text: "Launched Life With Aakash, took on independent client work and earned regional creator recognition.",
+    text: "Launched Life With Aakash (@life.with_aakash), took on commercial projects for regional brands including Chinnadurai Textiles, SalemRR Biriyani, and earned regional creator honors.",
+  },
+  {
+    year: "2025-2026",
+    title: "Commercial web engineering.",
+    text: "Designed and engineered the commercial fleet booking web platform and custom admin system for Jayashakthi Tours & Travels.",
   },
   {
     year: "2026",
-    title: "Real brands. Real responsibility.",
-    text: "Joined Digi Marketrix as a creative intern and developed personal branding strategies for clients.",
+    title: "Agency discipline & brand strategy.",
+    text: "Completed full-time creative internship at Digi Marketrix with 100% on-time delivery across commercial video series; led personal branding strategy for U6NICK and Purple Collection.",
   },
   {
     year: "Now",
-    title: "Connecting creativity and code.",
-    text: "Studying B.Tech AI & Data Science at Rathinam Technical Campus (2026-2030), while building toward a personal branding agency.",
+    title: "Connecting creativity, code & AI.",
+    text: "Studying B.Tech Artificial Intelligence & Data Science at Rathinam Technical Campus (2026–2030), combining creative production with algorithmic systems.",
   },
 ];

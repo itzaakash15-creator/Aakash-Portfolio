@@ -12,6 +12,7 @@
   "dependencies": {
     "@fontsource-variable/manrope": "5.2.6",
     "@phosphor-icons/react": "2.1.10",
+    "@rollup/rollup-darwin-arm64": "^4.56.0",
     "gsap": "3.13.0",
     "react": "19.1.1",
     "react-dom": "19.1.1"
