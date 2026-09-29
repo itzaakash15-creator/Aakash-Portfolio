@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#191b18" />
+    <meta
+      name="description"
+      content="Aakash K is a marketer, brand builder, creator and AI & Data Science student. Explore work across brand strategy, commercial storytelling, web development and IoT."
+    />
+    <title>Aakash K | Ideas into experiences</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem("aakash-theme") ||
+          (matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light");
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
