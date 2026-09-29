@@ -1,12 +1,12 @@
 :root {
   font-family: "Manrope Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color-scheme: dark;
-  --bg: #0c0e11;
-  --bg-gradient: radial-gradient(circle at 50% 0%, #151a22 0%, #0c0e11 75%);
-  --surface: #12151b;
-  --surface-card: #171b23;
-  --surface-card-hover: #1e2430;
-  --surface-glass: rgba(18, 21, 27, 0.78);
+  --bg: #090b0e;
+  --bg-gradient: radial-gradient(circle at 50% 0%, #12151c 0%, #090b0e 75%);
+  --surface: #101217;
+  --surface-card: #151820;
+  --surface-card-hover: #1c212b;
+  --surface-glass: rgba(16, 18, 23, 0.85);
   --ink: #f4f6f8;
   --muted: #9aa5b5;
   --line: rgba(255, 255, 255, 0.08);
@@ -14,7 +14,7 @@
   --accent: #d4ff33;
   --accent-glow: rgba(212, 255, 51, 0.18);
   --accent-ink: #0d1300;
-  --nav-bg: rgba(12, 14, 17, 0.88);
+  --nav-bg: rgba(9, 11, 14, 0.90);
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --z-nav: 50;
@@ -46,7 +46,7 @@
   --accent: #1e6b24;
   --accent-glow: rgba(30, 107, 36, 0.15);
   --accent-ink: #ffffff;
-  --nav-bg: rgba(248, 250, 252, 0.9);
+  --nav-bg: rgba(248, 250, 252, 0.92);
 }
 
 * {
@@ -70,7 +70,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Background Atmosphere Field */
+/* Background Atmosphere Field (Clean near-black canvas, no muddy green wash) */
 .bg-field {
   position: fixed;
   inset: 0;
@@ -80,15 +80,7 @@ body {
 }
 
 .bg-glow {
-  position: absolute;
-  top: -20%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(1200px, 95vw);
-  height: 600px;
-  background: radial-gradient(ellipse at center, var(--accent-glow) 0%, rgba(0,0,0,0) 70%);
-  filter: blur(80px);
-  opacity: 0.5;
+  display: none;
 }
 
 .bg-grid {
@@ -97,9 +89,9 @@ body {
   background-image: 
     linear-gradient(to right, var(--line) 1px, transparent 1px),
     linear-gradient(to bottom, var(--line) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: radial-gradient(ellipse at 50% 25%, black 40%, transparent 80%);
-  opacity: 0.45;
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse at 50% 30%, black 15%, transparent 65%);
+  opacity: 0.12;
 }
 
 /* Common resets and base */
@@ -239,14 +231,17 @@ p {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
   z-index: var(--z-nav);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   background: var(--nav-bg);
   border-bottom: 1px solid var(--line);
-  margin-bottom: 30px;
+  margin-bottom: 0;
 }
 
 .wordmark {
@@ -455,314 +450,445 @@ p {
   transform: translateY(0);
 }
 
-/* HERO SECTION */
-.hero {
+/* ==========================================================================
+   HERO STAGE: "AAKASH — Behind the Name" (Centred Visual Title Sequence)
+   ========================================================================== */
+.hero-stage {
   position: relative;
-  min-height: calc(100vh - 110px);
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  align-items: flex-end;
-  gap: 32px;
-  padding-top: 30px;
-  padding-bottom: 24px;
+  width: 100%;
+  height: 100vh;
+  min-height: 640px;
+  max-height: 1080px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 90px;
+  padding-bottom: 24px;
+  background: var(--bg);
 }
 
-/* Middle Layer: Huge Background "AAKASH" Lettering */
-.hero-backdrop-name {
+/* Layer 1: Restrained Radial Ambient Light behind Portrait */
+.hero-portrait-aura {
   position: absolute;
-  top: 10%;
+  top: 48%;
   left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
+  transform: translate(-50%, -50%);
+  width: min(580px, 85vw);
+  height: min(580px, 85vw);
+  background: radial-gradient(circle at center, rgba(212, 255, 51, 0.22) 0%, rgba(212, 255, 51, 0.04) 45%, transparent 70%);
+  filter: blur(60px);
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+:root[data-theme="light"] .hero-portrait-aura {
+  background: radial-gradient(circle at center, rgba(30, 107, 36, 0.16) 0%, rgba(30, 107, 36, 0.03) 45%, transparent 70%);
+}
+
+/* One-time Narrow Lime Light Sweep (Act 2) */
+.hero-light-sweep {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  width: 160px;
+  height: 70%;
+  background: linear-gradient(90deg, transparent 0%, rgba(212, 255, 51, 0.45) 50%, transparent 100%);
+  filter: blur(25px);
+  z-index: 2;
+  pointer-events: none;
+  transform: translateX(-150%);
+  opacity: 0;
+}
+
+/* Layer 2: Oversized AAKASH Typography (Behind Portrait) */
+.hero-wordmark-container,
+.hero-wordmark-front-container {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(90vw, 1460px);
   display: flex;
   justify-content: center;
   align-items: center;
   pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
   user-select: none;
+  perspective: 1200px;
 }
 
-.giant-letter-track {
+.hero-wordmark-container {
+  z-index: 2;
+}
+
+.hero-wordmark-track {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 1320px;
-  padding-inline: 16px;
-  font-size: clamp(4.8rem, 15.5vw, 15.5rem);
+  font-family: "Barlow Condensed", -apple-system, BlinkMacSystemFont, "Segoe UI", "Impact", sans-serif;
+  font-size: clamp(6.5rem, 19vw, 21rem);
   font-weight: 900;
   line-height: 0.82;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.03em;
   text-transform: uppercase;
-  color: rgba(225, 235, 248, 0.22);
-  text-shadow: 0 0 50px rgba(212, 255, 51, 0.12);
-  transition: color 0.4s ease, opacity 0.4s ease;
+  white-space: nowrap;
 }
 
-:root[data-theme="dark"] .giant-letter-track {
-  color: rgba(230, 240, 252, 0.20);
-  text-shadow: 0 0 50px rgba(212, 255, 51, 0.14);
-  -webkit-text-stroke: 1px rgba(230, 240, 252, 0.16);
+/* Background Filled Layer */
+.hero-wordmark-back {
+  color: rgba(240, 245, 255, 0.28);
+  text-shadow: 0 0 60px rgba(212, 255, 51, 0.12);
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.14);
 }
 
-:root[data-theme="light"] .giant-letter-track {
-  color: rgba(15, 23, 42, 0.12);
-  text-shadow: 0 0 35px rgba(30, 107, 36, 0.08);
-  -webkit-text-stroke: 1px rgba(15, 23, 42, 0.08);
+:root[data-theme="light"] .hero-wordmark-back {
+  color: rgba(15, 23, 42, 0.14);
+  text-shadow: 0 0 40px rgba(30, 107, 36, 0.08);
+  -webkit-text-stroke: 1.5px rgba(15, 23, 42, 0.12);
 }
 
-.giant-letter-mask {
+.hero-char-mask {
   display: inline-flex;
   overflow: hidden;
-  padding-block: 0.04em;
+  padding-block: 0.06em;
+  transform-style: preserve-3d;
 }
 
-.giant-letter {
+.hero-char {
   display: inline-block;
   will-change: transform, opacity;
+  transform-origin: bottom center;
 }
 
-/* Foreground: Editorial Content */
-.hero-content {
-  position: relative;
+/* Layer 3: Centred Freestanding Cutout (approx 80% available hero height) */
+.hero-portrait-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: clamp(520px, 80vh, 780px);
+  width: auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
   z-index: 4;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, black 86%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 86%, transparent 100%);
+}
+
+.hero-portrait-wrap picture {
+  height: 100%;
+  max-height: 100%;
+  width: auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.hero-portrait-freestanding {
+  height: 100%;
+  max-height: 100%;
+  width: auto;
+  max-width: 100vw;
+  object-fit: contain;
+  object-position: bottom center;
+  filter: contrast(1.05) brightness(1.02);
+  user-select: none;
+}
+
+/* Layer 4: Subtle Duplicate Outline Layer in front of Lower Torso ONLY */
+.hero-wordmark-front-container {
+  z-index: 5;
+  /* Masked so it is 100% transparent on upper 70% (head, hair, face, neck) and only subtly touches lower torso/arms */
+  mask-image: linear-gradient(to bottom, transparent 0%, transparent 72%, rgba(0, 0, 0, 0.45) 86%, black 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 72%, rgba(0, 0, 0, 0.45) 86%, black 100%);
+}
+
+.hero-wordmark-front {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(212, 255, 51, 0.4);
+}
+
+:root[data-theme="light"] .hero-wordmark-front {
+  -webkit-text-stroke: 1.5px rgba(30, 107, 36, 0.35);
+}
+
+.hero-char-front {
+  color: transparent;
+}
+
+/* Layer 5: Discreet First-Screen Bottom Bar */
+.hero-bottom-bar {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1320px, calc(100% - 64px));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.hero-caption {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.hero-affordances {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.hero-explore-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+  transition: color 0.2s var(--ease);
+}
+
+.hero-explore-link:hover {
+  color: var(--accent);
+}
+
+.explore-arrow {
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s var(--ease);
+}
+
+.hero-explore-link:hover .explore-arrow {
+  transform: translateY(3px);
+}
+
+.hero-scroll-cue {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  width: 1px;
+}
+
+.scroll-indicator-line {
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--muted) 0%, transparent 100%);
+  animation: scrollPulse 2.4s infinite ease-in-out;
+}
+
+@keyframes scrollPulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scaleY(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-indicator-line {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+/* ==========================================================================
+   INTRODUCTION SECTION: Service & Brand Lead (Immediately Below Hero)
+   ========================================================================== */
+.intro-section {
+  padding-block: 100px 70px;
+  position: relative;
+  z-index: 5;
+}
+
+.intro-container {
+  max-width: 900px;
+  margin-inline: auto;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding-bottom: 40px;
+  align-items: center;
+  text-align: center;
+  gap: 32px;
 }
 
-.hero-badge {
+.intro-badge {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 16px;
+  padding: 8px 18px;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-full);
-  width: fit-content;
   font-size: 13px;
   font-weight: 650;
   color: var(--muted);
 }
 
-.badge-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 10px var(--accent);
-}
-
-.hero-title {
-  font-size: clamp(44px, 5.8vw, 80px);
+.intro-title {
+  font-size: clamp(48px, 6.8vw, 88px);
   font-weight: 850;
   letter-spacing: -0.045em;
   line-height: 1.05;
+  text-wrap: balance;
 }
 
-.hero-mask-line {
+.intro-mask-line {
   display: block;
   overflow: hidden;
 }
 
-.hero-mask-line > span {
+.intro-mask-line > span {
   display: inline-block;
+  will-change: transform, opacity;
 }
 
-.hero-description {
-  font-size: clamp(17px, 1.7vw, 20px);
+.intro-description {
+  font-size: clamp(18px, 2vw, 22px);
   color: var(--muted);
-  max-width: 560px;
-  line-height: 1.55;
+  max-width: 660px;
+  line-height: 1.6;
+  text-wrap: pretty;
 }
 
-.hero-actions {
+.intro-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
   gap: 16px;
-  margin-top: 6px;
+  margin-top: 8px;
 }
 
-.hero-location-tag {
+.intro-location-tag {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 13px;
   font-weight: 600;
   color: var(--muted);
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
-/* Hero Portrait Stage: Freestanding Cutout Dominant (75-88% height) */
-.hero-portrait-stage {
+/* Magnetic Buttons Microinteraction */
+.magnetic-btn {
   position: relative;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  z-index: 3;
-  pointer-events: none;
+  transition: transform 0.25s var(--ease), box-shadow 0.2s var(--ease), border-color 0.2s;
+  will-change: transform;
 }
 
-/* Accent: Soft lime light source behind shoulders */
-.hero-portrait-aura {
-  position: absolute;
-  bottom: 22%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(500px, 95%);
-  height: 440px;
-  background: radial-gradient(circle at center, rgba(212, 255, 51, 0.28) 0%, rgba(212, 255, 51, 0.06) 45%, transparent 70%);
-  filter: blur(50px);
-  z-index: 2;
-  pointer-events: none;
-  border-radius: 50%;
-  opacity: 0.6;
+.magnetic-btn svg {
+  transition: transform 0.2s var(--ease);
 }
 
-:root[data-theme="light"] .hero-portrait-aura {
-  background: radial-gradient(circle at center, rgba(30, 107, 36, 0.18) 0%, rgba(30, 107, 36, 0.04) 45%, transparent 70%);
+.magnetic-btn:hover svg {
+  transform: translate(2px, -2px);
 }
 
-.hero-portrait-cutout {
-  position: relative;
-  height: clamp(480px, 74vh, 700px);
-  width: auto;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  pointer-events: auto;
-  /* Anchor lower body with subtle fade only at bottom edge */
-  mask-image: linear-gradient(to bottom, black 84%, transparent 99%);
-  -webkit-mask-image: linear-gradient(to bottom, black 84%, transparent 99%);
+.btn-primary:hover svg {
+  transform: translateY(3px);
 }
 
-.hero-portrait-cutout picture {
-  height: 100%;
-  max-height: 100%;
-  width: auto;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-}
-
-.freestanding-portrait-img {
-  height: 100%;
-  max-height: 100%;
-  width: auto;
-  max-width: 100%;
-  object-fit: contain;
-  object-position: bottom center;
-  filter: contrast(1.04) brightness(1.02);
-  user-select: none;
-  pointer-events: none;
-}
-
-/* Minimal Scroll Cue */
-.hero-scroll-cue {
-  position: absolute;
-  bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 6;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.scroll-cue-link {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  opacity: 0.65;
-  transition: opacity 0.2s var(--ease), color 0.2s var(--ease), transform 0.2s var(--ease);
-}
-
-.scroll-cue-link:hover {
-  opacity: 1;
-  color: var(--ink);
-  transform: translateY(2px);
-}
-
-.scroll-cue-arrow {
-  animation: scrollBounce 2.2s infinite ease-in-out;
-}
-
-@keyframes scrollBounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(4px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .scroll-cue-arrow {
-    animation: none;
-  }
+.btn-secondary:hover svg,
+.header-contact-btn:hover svg,
+.dialog-actions a:hover svg {
+  transform: translate(3px, -3px);
 }
 
 /* Responsive Mobile Layout */
-@media (max-width: 1024px) {
-  .hero {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    padding-top: 15px;
-    padding-bottom: 45px;
-    min-height: auto;
-    height: auto;
+@media (max-width: 860px) {
+  .hero-stage {
+    height: 100svh;
+    min-height: 560px;
+    max-height: none;
+    padding-top: 76px;
+    padding-bottom: 20px;
   }
 
-  .hero-backdrop-name {
-    top: 20px;
+  .hero-wordmark-front-container {
+    display: none;
   }
 
-  .giant-letter-track {
-    font-size: clamp(3.6rem, 15vw, 6.8rem);
-    letter-spacing: -0.035em;
-    padding-inline: 8px;
+  .hero-wordmark-container {
+    top: 34%;
+    width: 92vw;
   }
 
-  /* Stage comes before content on mobile so visual entrance order is preserved */
-  .hero-portrait-stage {
-    order: 1;
-    min-height: auto;
-    height: clamp(350px, 52vh, 460px);
+  .hero-wordmark-track {
+    font-size: clamp(3.8rem, 17vw, 6.2rem);
+    letter-spacing: -0.02em;
+  }
+
+  .hero-portrait-wrap {
+    height: clamp(380px, 58vh, 520px);
     width: 100%;
-    margin-top: 8px;
-  }
-
-  .hero-portrait-cutout {
-    height: 100%;
   }
 
   .hero-portrait-aura {
-    width: min(380px, 90%);
-    height: 340px;
-    bottom: 18%;
+    top: 38%;
+    width: 300px;
+    height: 300px;
   }
 
-  .hero-content {
-    order: 2;
-    width: 100%;
-    padding-bottom: 0;
-    z-index: 5;
+  .hero-bottom-bar {
+    position: absolute;
+    top: 98px;
+    bottom: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 36px);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    gap: 8px;
+    z-index: 10;
   }
 
   .hero-scroll-cue {
     display: none;
+  }
+
+  .hero-caption {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
+  .hero-explore-link {
+    font-size: 12px;
+  }
+
+  .intro-section {
+    padding-block: 60px 40px;
+  }
+
+  .intro-container {
+    text-align: left;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .intro-actions {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .intro-actions > * {
+    width: 100%;
   }
 }
 

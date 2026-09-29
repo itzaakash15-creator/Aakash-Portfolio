@@ -184,8 +184,12 @@ export default function App() {
   const root = useRef(null);
   const heroSection = useRef(null);
   const bgNameRef = useRef(null);
+  const frontNameRef = useRef(null);
   const portraitCutoutRef = useRef(null);
   const auraRef = useRef(null);
+  const lightSweepRef = useRef(null);
+  const bottomBarRef = useRef(null);
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [filter, setFilter] = useState("All work");
   const [selectedProject, setSelectedProject] = useState(null);
@@ -211,7 +215,7 @@ export default function App() {
     } catch {}
   }, [theme]);
 
-  // Motion Choreography
+  // Motion Choreography: "AAKASH — Behind the Name" (~2.5s title sequence)
   useEffect(() => {
     const mm = gsap.matchMedia();
 
@@ -221,21 +225,22 @@ export default function App() {
         const alreadySeen = sessionStorage.getItem("aakash_hero_intro_seen") === "true";
 
         // Initial states: applied immediately so subsequent elements are hidden at start
-        gsap.set(".giant-letter", { yPercent: 115, scale: 1.04, opacity: 0 });
-        gsap.set(".hero-portrait-cutout", { opacity: 0, y: 36 });
-        gsap.set(".hero-backdrop-name", { filter: "brightness(1.6)" });
-        gsap.set(".hero-portrait-aura", { scale: 0.65, opacity: 0 });
-        gsap.set(".hero-mask-line > span", { yPercent: 115, opacity: 0 });
-        gsap.set(".hero-badge", { opacity: 0, y: 16 });
-        gsap.set([".hero-description", ".hero-actions > *", ".hero-location-tag"], {
+        gsap.set(".hero-char", { yPercent: 120, rotateX: -24, opacity: 0 });
+        gsap.set(".hero-wordmark-track", { letterSpacing: "0.06em" });
+        gsap.set([bgNameRef.current, frontNameRef.current], { y: "0vh", scale: 1 });
+        gsap.set(lightSweepRef.current, { xPercent: -150, opacity: 0 });
+        gsap.set(portraitCutoutRef.current, {
+          y: 40,
+          scale: 1.035,
           opacity: 0,
-          y: 20,
+          clipPath: "inset(14% 0% 0% 0%)",
         });
-        gsap.set(".site-header", { opacity: 0, y: -12 });
-        gsap.set(".hero-scroll-cue", { opacity: 0, y: 10 });
+        gsap.set(frontNameRef.current, { opacity: 0 });
+        gsap.set(auraRef.current, { scale: 0.65, opacity: 0 });
+        gsap.set(".site-header", { opacity: 0, y: -16 });
+        gsap.set(".hero-bottom-bar > *", { opacity: 0, y: 16 });
 
-        // Coordinated entrance timeline (~2 seconds total)
-        // Order: AAKASH -> my portrait -> headline, navigation, and supporting elements
+        // Coordinated 4-act entrance timeline
         const tl = gsap.timeline({
           defaults: { ease: "power3.out" },
           onComplete: () => {
@@ -245,119 +250,133 @@ export default function App() {
           },
         });
 
-        // 0.00-0.65s: NAME FIRST
-        // Crisp bottom-to-top typographic mask with short letter stagger
+        // ACT 1: THE NAME (0.00 to 0.85s)
+        // Letters rise from below baseline with slight perspective rotation into a crisp straight word.
+        // Stagger of 55ms between letters, spacing settles from wider to tight.
         tl.to(
-          ".giant-letter",
+          ".hero-char",
           {
             yPercent: 0,
-            scale: 1,
+            rotateX: 0,
             opacity: 1,
-            duration: 0.58,
-            stagger: 0.04,
+            duration: 0.72,
+            stagger: 0.055,
+            ease: "power4.out",
+          },
+          0.0
+        );
+
+        tl.to(
+          ".hero-wordmark-track",
+          {
+            letterSpacing: "-0.04em",
+            duration: 0.82,
             ease: "power3.out",
           },
           0.0
         );
 
-        // 0.55-1.25s: PORTRAIT SECOND
-        // Reveal portrait with soft upward rise (36px) and opacity
+        // ACT 2: MAKE ROOM FOR THE PERSON (0.75 to 1.30s)
+        // Smoothly translate and scale lettering into final position behind portrait.
         tl.to(
-          ".hero-portrait-cutout",
+          [bgNameRef.current, frontNameRef.current],
           {
-            opacity: 1,
-            y: 0,
-            duration: 0.7,
-            ease: "power2.out",
+            y: "-8vh",
+            scale: 0.94,
+            duration: 0.65,
+            ease: "power3.inOut",
           },
-          0.55
+          0.75
         );
 
-        // As portrait arrives, gently reduce name brightness to settle as background layer
-        tl.to(
-          ".hero-backdrop-name",
+        // Narrow lime light sweep across behind future portrait position
+        tl.fromTo(
+          lightSweepRef.current,
           {
-            filter: "brightness(1)",
-            duration: 0.65,
+            xPercent: -150,
+            opacity: 0,
+          },
+          {
+            xPercent: 150,
+            opacity: 0.8,
+            duration: 0.55,
             ease: "power2.inOut",
           },
-          0.65
+          0.80
         );
 
-        // Restrained lime light sweep behind shoulders
         tl.to(
-          ".hero-portrait-aura",
+          lightSweepRef.current,
+          {
+            opacity: 0,
+            duration: 0.25,
+            ease: "power1.out",
+          },
+          1.30
+        );
+
+        // ACT 3: PORTRAIT REVEAL (1.00 to 1.85s)
+        // Portrait reveals using rising mask, small upward translation, subtle scale settle 1.035 to 1
+        tl.to(
+          portraitCutoutRef.current,
+          {
+            y: 0,
+            scale: 1,
+            opacity: 1,
+            clipPath: "inset(0% 0% 0% 0%)",
+            duration: 0.85,
+            ease: "power3.out",
+          },
+          1.00
+        );
+
+        // Front outline layer fades in over lower torso
+        tl.to(
+          frontNameRef.current,
+          {
+            opacity: 1,
+            duration: 0.6,
+            ease: "power2.out",
+          },
+          1.20
+        );
+
+        // Restrained lime ambient light aura blooms behind shoulders
+        tl.to(
+          auraRef.current,
           {
             scale: 1,
             opacity: 0.6,
-            duration: 0.75,
+            duration: 0.8,
             ease: "power2.out",
           },
-          0.68
+          1.05
         );
 
-        // 1.10-1.85s: CONTENT THIRD
-        // Reveal headline line by line
-        tl.to(
-          ".hero-mask-line > span",
-          {
-            yPercent: 0,
-            opacity: 1,
-            duration: 0.65,
-            stagger: 0.12,
-            ease: "power3.out",
-          },
-          1.10
-        );
-
-        // Role label / badge
-        tl.to(
-          ".hero-badge",
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.45,
-            ease: "power2.out",
-          },
-          1.25
-        );
-
-        // Supporting description, CTAs, location tag
-        tl.to(
-          [".hero-description", ".hero-actions > *", ".hero-location-tag"],
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.5,
-            stagger: 0.08,
-            ease: "power2.out",
-          },
-          1.35
-        );
-
-        // Site navigation & header
+        // ACT 4: THE INTERFACE ARRIVES (1.75 to 2.50s)
+        // Navigation downward reveal
         tl.to(
           ".site-header",
           {
             opacity: 1,
             y: 0,
-            duration: 0.5,
+            duration: 0.55,
             ease: "power2.out",
           },
-          1.30
+          1.75
         );
 
-        // 1.85-2.10s: FINISH
-        // Reveal minimal scroll cue
+        // Caption, explore work link, and scroll cue with understated staggered movement
         tl.to(
-          ".hero-scroll-cue",
+          ".hero-bottom-bar > *",
           {
             opacity: 1,
             y: 0,
-            duration: 0.35,
+            duration: 0.55,
+            stagger: 0.1,
             ease: "power2.out",
           },
-          1.85
+          1.90
         );
 
         // Respect direct anchor links (e.g. #work) or already viewed intro
@@ -365,10 +384,10 @@ export default function App() {
           tl.progress(1);
         }
 
-        // Scroll parallax on background name (moves slightly slower than foreground)
+        // Scroll parallax: background name moves slightly slower than portrait
         if (bgNameRef.current && heroSection.current) {
-          gsap.to(bgNameRef.current, {
-            y: 90,
+          gsap.to([bgNameRef.current, frontNameRef.current], {
+            y: 110,
             ease: "none",
             scrollTrigger: {
               trigger: heroSection.current,
@@ -378,6 +397,39 @@ export default function App() {
             },
           });
         }
+
+        // Introduction section scroll reveal: line-by-line reveal on headline
+        gsap.from(".intro-mask-line > span", {
+          yPercent: 110,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.12,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".intro-section",
+            start: "top 82%",
+            once: true,
+          },
+          clearProps: "all",
+        });
+
+        // Intro supporting elements
+        gsap.from(
+          [".intro-badge", ".intro-description", ".intro-actions", ".intro-location-tag"],
+          {
+            y: 28,
+            opacity: 0,
+            duration: 0.65,
+            stagger: 0.1,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: ".intro-section",
+              start: "top 78%",
+              once: true,
+            },
+            clearProps: "all",
+          }
+        );
 
         // General scroll reveals
         gsap.utils.toArray(".reveal").forEach((element) => {
@@ -439,9 +491,9 @@ export default function App() {
     const yRatio = (event.clientY - rect.top) / rect.height - 0.5;
 
     if (bgNameRef.current) {
-      gsap.to(bgNameRef.current, {
-        x: xRatio * -16,
-        y: yRatio * -10,
+      gsap.to([bgNameRef.current, frontNameRef.current], {
+        x: xRatio * -14,
+        y: yRatio * -8,
         duration: 0.65,
         ease: "power2.out",
         overwrite: "auto",
@@ -449,8 +501,8 @@ export default function App() {
     }
     if (portraitCutoutRef.current) {
       gsap.to(portraitCutoutRef.current, {
-        x: xRatio * 18,
-        y: yRatio * 12,
+        x: xRatio * 14,
+        y: yRatio * 8,
         duration: 0.65,
         ease: "power2.out",
         overwrite: "auto",
@@ -458,8 +510,8 @@ export default function App() {
     }
     if (auraRef.current) {
       gsap.to(auraRef.current, {
-        x: xRatio * 22,
-        y: yRatio * 14,
+        x: xRatio * 18,
+        y: yRatio * 10,
         duration: 0.75,
         ease: "power2.out",
         overwrite: "auto",
@@ -469,7 +521,7 @@ export default function App() {
 
   function handleHeroPointerLeave() {
     if (bgNameRef.current) {
-      gsap.to(bgNameRef.current, { x: 0, y: 0, duration: 0.8, ease: "power2.out" });
+      gsap.to([bgNameRef.current, frontNameRef.current], { x: 0, y: 0, duration: 0.8, ease: "power2.out" });
     }
     if (portraitCutoutRef.current) {
       gsap.to(portraitCutoutRef.current, { x: 0, y: 0, duration: 0.8, ease: "power2.out" });
@@ -478,6 +530,33 @@ export default function App() {
       gsap.to(auraRef.current, { x: 0, y: 0, duration: 0.8, ease: "power2.out" });
     }
   }
+
+  // Magnetic button microinteraction for fine-pointer devices
+  useEffect(() => {
+    if (matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)").matches) return;
+    const buttons = document.querySelectorAll(".magnetic-btn");
+    const cleanups = [];
+
+    buttons.forEach((btn) => {
+      const onMove = (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = (e.clientX - rect.left - rect.width / 2) * 0.22;
+        const y = (e.clientY - rect.top - rect.height / 2) * 0.22;
+        gsap.to(btn, { x, y, duration: 0.3, ease: "power2.out", overwrite: "auto" });
+      };
+      const onLeave = () => {
+        gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1, 0.4)", overwrite: "auto" });
+      };
+      btn.addEventListener("pointermove", onMove);
+      btn.addEventListener("pointerleave", onLeave);
+      cleanups.push(() => {
+        btn.removeEventListener("pointermove", onMove);
+        btn.removeEventListener("pointerleave", onLeave);
+      });
+    });
+
+    return () => cleanups.forEach((fn) => fn());
+  }, []);
 
   function changeFilter(value) {
     setFilter(value);
@@ -587,92 +666,125 @@ export default function App() {
       </header>
 
       <main id="main">
-        {/* HERO SECTION */}
+        {/* HERO SECTION: Centred Title Sequence Stage */}
         <section
-          className="hero wrap"
-          aria-labelledby="hero-heading"
+          className="hero-stage"
+          id="hero"
+          aria-label="Aakash K hero introduction"
           ref={heroSection}
           onPointerMove={handleHeroPointerMove}
           onPointerLeave={handleHeroPointerLeave}
         >
-          {/* Huge "AAKASH" in the Background */}
-          <div className="hero-backdrop-name" aria-hidden="true" ref={bgNameRef}>
-            <div className="giant-letter-track">
+          {/* Restrained radial ambient light behind portrait */}
+          <div className="hero-portrait-aura" ref={auraRef} aria-hidden="true" />
+
+          {/* Narrow lime light sweep across behind portrait (Act 2) */}
+          <div className="hero-light-sweep" ref={lightSweepRef} aria-hidden="true" />
+
+          {/* Huge "AAKASH" Background Layer (Behind Portrait) */}
+          <div className="hero-wordmark-container" ref={bgNameRef} aria-hidden="true">
+            <div className="hero-wordmark-track hero-wordmark-back">
               {"AAKASH".split("").map((letter, i) => (
-                <span key={i} className="giant-letter-mask">
-                  <span className="giant-letter">{letter}</span>
+                <span key={i} className="hero-char-mask">
+                  <span className="hero-char">{letter}</span>
                 </span>
               ))}
             </div>
           </div>
 
-          {/* Left Column Editorial Content */}
-          <div className="hero-content">
-            <div className="hero-badge">
+          {/* Centred Freestanding Cutout (approx 80% available hero height) */}
+          <div className="hero-portrait-wrap" ref={portraitCutoutRef}>
+            <picture>
+              <source srcSet="/images/aakash.webp" type="image/webp" />
+              <img
+                src="/images/aakash.png"
+                alt="Aakash K, marketer, brand builder and creator"
+                fetchPriority="high"
+                width="682"
+                height="1024"
+                className="hero-portrait-freestanding"
+              />
+            </picture>
+          </div>
+
+          {/* Subtle Duplicate Outline Layer in front of Lower Torso ONLY (never over face) */}
+          <div className="hero-wordmark-front-container" ref={frontNameRef} aria-hidden="true">
+            <div className="hero-wordmark-track hero-wordmark-front">
+              {"AAKASH".split("").map((letter, i) => (
+                <span key={i} className="hero-char-mask">
+                  <span className="hero-char hero-char-front">{letter}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* First-Screen Bottom Bar: Caption, Explore Link, and Scroll Cue */}
+          <div className="hero-bottom-bar" ref={bottomBarRef}>
+            <p className="hero-caption">Creative mind. Real-world impact.</p>
+
+            <div className="hero-affordances">
+              <a href="#work" className="hero-explore-link">
+                <span className="explore-text">Explore work</span>
+                <span className="explore-arrow">
+                  <ArrowDown size={14} weight="bold" />
+                </span>
+              </a>
+
+              <a
+                href="#intro"
+                className="hero-scroll-cue"
+                aria-label="Scroll to introduction"
+              >
+                <span className="scroll-indicator-line" />
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* INTRODUCTION SECTION: Service & Brand Lead (Immediately Below Hero) */}
+        <section
+          className="intro-section wrap"
+          id="intro"
+          aria-labelledby="intro-heading"
+        >
+          <div className="intro-container">
+            <div className="intro-badge">
               <span className="badge-dot" />
               <span className="badge-text">
                 Marketer • Brand Builder • AI &amp; Data Science Student
               </span>
             </div>
 
-            <h1 id="hero-heading" className="hero-title">
-              <span className="hero-mask-line">
+            <h1 id="intro-heading" className="intro-title">
+              <span className="intro-mask-line">
                 <span>I turn attention</span>
               </span>
-              <span className="hero-mask-line">
+              <span className="intro-mask-line">
                 <span className="text-lime-accent">into impact.</span>
               </span>
             </h1>
 
-            <div className="hero-support-group">
-              <p className="hero-description">
-                I’m Aakash K — blending brand strategy, content, and web
-                development to help people and businesses stand out.
-              </p>
+            <p className="intro-description">
+              I’m Aakash K — blending brand strategy, content, and web
+              development to help people and businesses stand out.
+            </p>
 
-              <div className="hero-actions">
-                <a href="#work" className="btn-primary">
-                  <span>Explore my work</span>
-                  <ArrowDown size={18} weight="bold" />
-                </a>
+            <div className="intro-actions">
+              <a href="#work" className="btn-primary magnetic-btn">
+                <span>Explore my work</span>
+                <ArrowDown size={18} weight="bold" />
+              </a>
 
-                <a href="#contact" className="btn-secondary">
-                  <span>Let’s collaborate</span>
-                  <ArrowUpRight size={18} weight="bold" />
-                </a>
-              </div>
-
-              <div className="hero-location-tag">
-                <Compass size={16} weight="duotone" />
-                <span>Based between Coimbatore &amp; Tuticorin, Tamil Nadu</span>
-              </div>
+              <a href="#contact" className="btn-secondary magnetic-btn">
+                <span>Let’s collaborate</span>
+                <ArrowUpRight size={18} weight="bold" />
+              </a>
             </div>
-          </div>
 
-          {/* Right Column: Freestanding Portrait Cutout */}
-          <div className="hero-portrait-stage">
-            <div className="hero-portrait-aura" ref={auraRef} aria-hidden="true" />
-            <div className="hero-portrait-cutout" ref={portraitCutoutRef}>
-              <picture>
-                <source srcSet="/images/aakash.webp" type="image/webp" />
-                <img
-                  src="/images/aakash.png"
-                  alt="Aakash K, marketer, brand builder and creator"
-                  fetchPriority="high"
-                  width="682"
-                  height="1024"
-                  className="freestanding-portrait-img"
-                />
-              </picture>
+            <div className="intro-location-tag">
+              <Compass size={16} weight="duotone" />
+              <span>Based between Coimbatore &amp; Tuticorin, Tamil Nadu</span>
             </div>
-          </div>
-
-          {/* Minimal Scroll Cue */}
-          <div className="hero-scroll-cue" aria-hidden="true">
-            <a href="#work" className="scroll-cue-link" tabIndex={-1}>
-              <span className="scroll-cue-text">Scroll</span>
-              <ArrowDown size={14} weight="bold" className="scroll-cue-arrow" />
-            </a>
           </div>
         </section>
 
