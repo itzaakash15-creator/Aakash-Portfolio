@@ -457,26 +457,80 @@ p {
 
 /* HERO SECTION */
 .hero {
-  min-height: calc(85vh - 90px);
+  position: relative;
+  min-height: calc(100vh - 110px);
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  align-items: flex-end;
+  gap: 32px;
+  padding-top: 30px;
+  padding-bottom: 24px;
+  overflow: hidden;
+}
+
+/* Middle Layer: Huge Background "AAKASH" Lettering */
+.hero-backdrop-name {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 60px;
-  padding-block: 40px 80px;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+  user-select: none;
 }
 
-@media (max-width: 1024px) {
-  .hero {
-    grid-template-columns: 1fr;
-    gap: 50px;
-    padding-block: 20px 60px;
-  }
+.giant-letter-track {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1320px;
+  padding-inline: 16px;
+  font-size: clamp(4.8rem, 15.5vw, 15.5rem);
+  font-weight: 900;
+  line-height: 0.82;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: rgba(225, 235, 248, 0.22);
+  text-shadow: 0 0 50px rgba(212, 255, 51, 0.12);
+  transition: color 0.4s ease, opacity 0.4s ease;
 }
 
+:root[data-theme="dark"] .giant-letter-track {
+  color: rgba(230, 240, 252, 0.20);
+  text-shadow: 0 0 50px rgba(212, 255, 51, 0.14);
+  -webkit-text-stroke: 1px rgba(230, 240, 252, 0.16);
+}
+
+:root[data-theme="light"] .giant-letter-track {
+  color: rgba(15, 23, 42, 0.12);
+  text-shadow: 0 0 35px rgba(30, 107, 36, 0.08);
+  -webkit-text-stroke: 1px rgba(15, 23, 42, 0.08);
+}
+
+.giant-letter-mask {
+  display: inline-flex;
+  overflow: hidden;
+  padding-block: 0.04em;
+}
+
+.giant-letter {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+/* Foreground: Editorial Content */
 .hero-content {
+  position: relative;
+  z-index: 4;
   display: flex;
   flex-direction: column;
-  gap: 26px;
+  gap: 24px;
+  padding-bottom: 40px;
 }
 
 .hero-badge {
@@ -502,7 +556,7 @@ p {
 }
 
 .hero-title {
-  font-size: clamp(48px, 6.5vw, 84px);
+  font-size: clamp(44px, 5.8vw, 80px);
   font-weight: 850;
   letter-spacing: -0.045em;
   line-height: 1.05;
@@ -518,9 +572,9 @@ p {
 }
 
 .hero-description {
-  font-size: clamp(17px, 1.8vw, 21px);
+  font-size: clamp(17px, 1.7vw, 20px);
   color: var(--muted);
-  max-width: 580px;
+  max-width: 560px;
   line-height: 1.55;
 }
 
@@ -542,124 +596,174 @@ p {
   margin-top: 6px;
 }
 
-/* Hero Portrait Stage */
-.portrait-stage {
+/* Hero Portrait Stage: Freestanding Cutout Dominant (75-88% height) */
+.hero-portrait-stage {
   position: relative;
+  height: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
-  perspective: 1200px;
-  max-width: 100%;
-  overflow: hidden;
-}
-
-.portrait-composition {
-  position: relative;
-  width: min(440px, 100%);
-  border-radius: var(--radius-lg);
-  background: var(--surface-card);
-  border: 1px solid var(--line-strong);
-  padding: 16px;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
-  transform-style: preserve-3d;
-  transition: border-color 0.3s;
-}
-
-.portrait-composition:hover {
-  border-color: var(--line-strong);
-}
-
-.portrait-accent-halo {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 75% 20%, var(--accent-glow) 0%, transparent 65%);
-  filter: blur(40px);
-  z-index: -1;
+  align-items: flex-end;
+  z-index: 3;
   pointer-events: none;
 }
 
-.portrait-lime-chip {
+/* Accent: Soft lime light source behind shoulders */
+.hero-portrait-aura {
   position: absolute;
-  top: -12px;
-  right: 24px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  background: var(--accent);
-  color: var(--accent-ink);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  border-radius: var(--radius-full);
-  box-shadow: 0 4px 16px var(--accent-glow);
+  bottom: 22%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(500px, 95%);
+  height: 440px;
+  background: radial-gradient(circle at center, rgba(212, 255, 51, 0.28) 0%, rgba(212, 255, 51, 0.06) 45%, transparent 70%);
+  filter: blur(50px);
   z-index: 2;
-}
-
-.portrait-frame {
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  background: #090a0d;
-}
-
-.hero-portrait-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 22%;
-  filter: contrast(1.04) brightness(0.98);
-}
-
-.portrait-footer-card {
-  margin-top: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 4px 6px;
-}
-
-.portrait-signature-box {
-  display: flex;
-  flex-direction: column;
-}
-
-.portrait-sub {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-weight: 700;
-  color: var(--muted);
-}
-
-.portrait-name {
-  font-size: 17px;
-  font-weight: 800;
-  color: var(--ink);
-}
-
-.portrait-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-full);
-  font-size: 11px;
-  font-weight: 650;
-  color: var(--muted);
-}
-
-.live-dot {
-  width: 6px;
-  height: 6px;
+  pointer-events: none;
   border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 6px #10b981;
+  opacity: 0.6;
+}
+
+:root[data-theme="light"] .hero-portrait-aura {
+  background: radial-gradient(circle at center, rgba(30, 107, 36, 0.18) 0%, rgba(30, 107, 36, 0.04) 45%, transparent 70%);
+}
+
+.hero-portrait-cutout {
+  position: relative;
+  height: clamp(480px, 74vh, 700px);
+  width: auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: auto;
+  /* Anchor lower body with subtle fade only at bottom edge */
+  mask-image: linear-gradient(to bottom, black 84%, transparent 99%);
+  -webkit-mask-image: linear-gradient(to bottom, black 84%, transparent 99%);
+}
+
+.hero-portrait-cutout picture {
+  height: 100%;
+  max-height: 100%;
+  width: auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.freestanding-portrait-img {
+  height: 100%;
+  max-height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  filter: contrast(1.04) brightness(1.02);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Minimal Scroll Cue */
+.hero-scroll-cue {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.scroll-cue-link {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.65;
+  transition: opacity 0.2s var(--ease), color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.scroll-cue-link:hover {
+  opacity: 1;
+  color: var(--ink);
+  transform: translateY(2px);
+}
+
+.scroll-cue-arrow {
+  animation: scrollBounce 2.2s infinite ease-in-out;
+}
+
+@keyframes scrollBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue-arrow {
+    animation: none;
+  }
+}
+
+/* Responsive Mobile Layout */
+@media (max-width: 1024px) {
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding-top: 15px;
+    padding-bottom: 45px;
+    min-height: auto;
+    height: auto;
+  }
+
+  .hero-backdrop-name {
+    top: 20px;
+  }
+
+  .giant-letter-track {
+    font-size: clamp(3.6rem, 15vw, 6.8rem);
+    letter-spacing: -0.035em;
+    padding-inline: 8px;
+  }
+
+  /* Stage comes before content on mobile so visual entrance order is preserved */
+  .hero-portrait-stage {
+    order: 1;
+    min-height: auto;
+    height: clamp(350px, 52vh, 460px);
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .hero-portrait-cutout {
+    height: 100%;
+  }
+
+  .hero-portrait-aura {
+    width: min(380px, 90%);
+    height: 340px;
+    bottom: 18%;
+  }
+
+  .hero-content {
+    order: 2;
+    width: 100%;
+    padding-bottom: 0;
+    z-index: 5;
+  }
+
+  .hero-scroll-cue {
+    display: none;
+  }
 }
 
 /* PROOF & CREDIBILITY SECTION */
